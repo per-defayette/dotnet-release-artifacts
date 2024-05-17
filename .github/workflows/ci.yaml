@@ -9,17 +9,11 @@ jobs:
     name: Release
     strategy:
       matrix:
-        kind: ['linux', 'windows', 'macOS']
+        kind: ['windows']
         include:
-          - kind: linux
-            os: ubuntu-latest
-            target: linux-x64
           - kind: windows
             os: windows-latest
             target: win-x64
-          - kind: macOS
-            os: macos-latest
-            target: osx-x64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -38,20 +32,15 @@ jobs:
 
           # Build everything
           dotnet publish src/App/App.csproj --framework net8.0 --runtime "${{ matrix.target }}" -c Release -o "$release_name"
-
-          # Pack files
-          if [ "${{ matrix.target }}" == "win-x64" ]; then
-            # Pack to zip for Windows
-            7z a -tzip "${release_name}.zip" "./${release_name}/*"
-          else
-          tar czvf "${release_name}.tar.gz" "$release_name"
-          fi
-
+       
+          # Pack to zip for Windows
+          7z a -tzip "${release_name}.zip" "./${release_name}/*"
+          
           # Delete output directory
           rm -r "$release_name"
 
       - name: Publish
-        uses: softprops/action-gh-release@v4
+        uses: softprops/action-gh-release@v1
         with:
           files: "App*"
         env:
