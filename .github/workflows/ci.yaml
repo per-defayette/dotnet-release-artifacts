@@ -38,7 +38,8 @@ jobs:
           
           # Delete output directory
           rm -r "$release_name"
-
+      - name: List Build Folder Contents
+        run: ls 
       - name: Publish
         uses: softprops/action-gh-release@v2
         with:
